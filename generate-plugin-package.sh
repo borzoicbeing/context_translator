@@ -1,0 +1,1 @@
+zip -r context-translator-plugin ./src

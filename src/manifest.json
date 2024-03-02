@@ -7,7 +7,7 @@
     "version": "1.0",
     "permissions": ["contextMenus","storage"],
     "background": {
-      "service_worker": "context_menu.js"
+      "service_worker": "background.js"
     },
     "content_scripts": [{
       "matches":["<all_urls>"],

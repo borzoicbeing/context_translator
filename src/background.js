@@ -14,6 +14,7 @@
 
 // A generic onclick callback function.
 
+importScripts('ExtPay.js') // or `import` / `require` if using a bundler
 
 chrome.contextMenus.onClicked.addListener(genericOnClick);
 
@@ -27,17 +28,25 @@ async function genericOnClick(info) {
     case 'execution':
       // Checkbox item function
           //Add all you functional Logic here
-      (async () => {
-        const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-        const response = await chrome.tabs.sendMessage(tab.id, {
-          "function": "translateByOpenAI",
-          "params":{
-            "searchText":info.selectionText
+        extpay.getUser().then(user => {
+          if (user.paid) {
+            (async () => {
+              const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+            const response = await chrome.tabs.sendMessage(tab.id, {
+              "function": "translateByOpenAI",
+              "params":{
+                "searchText":info.selectionText
+              }
+            });
+            // do something with response here, not outside the function
+            console.log(response);
+            })();
+    
+          } else {
+              console.log('not paid!!')
+              extpay.openPaymentPage()
           }
-        });
-        // do something with response here, not outside the function
-        console.log(response);
-      })();
+        })
       break;
     default:
       // Standard context menu item function
@@ -88,3 +97,6 @@ chrome.runtime.onInstalled.addListener(function () {
   );
 });
 
+
+const extpay = ExtPay('context-plugin-for-chrome');
+extpay.startBackground(); 
